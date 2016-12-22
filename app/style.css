@@ -1,0 +1,71 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+*,
+:after,
+:before {
+  box-sizing: border-box
+}
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+.hide{
+	display: none;
+}
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.fr {
+  float: right;
+}
+.fl {
+  float: left;
+}
+
+html,body {
+	background: #f5f5f5;
+	font-size: 16px;
+	font-family: Helvetica, 'Hiragino Sans GB', 'Microsoft Yahei', '微软雅黑', Arial, sans-serif;
+	-webkit-font-smoothing: antialiased;
+}
+
+#root {
+	margin: 50px 0;
+	position: relative;
+	z-index: 2;
+}
+
+#star {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1;
+}
+
+@font-face {
+	font-family: 'voltergoldfish';
+	/* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  src: url('./fonts/voltergoldfish.ttf') format('truetype')
+}
+.font-xs{
+	font-family:'voltergoldfish' !important;
+	font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;
+}
+
