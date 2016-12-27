@@ -1,12 +1,22 @@
 export default {
 	// 设置奖项
-	setPrizeItem(prizes) {
+	setPrizes(prizes) {
 		this._saveObject('prizes', prizes);
 	},
 
 	// 获取奖项
-	getPrizeItem() {
-		return this._getObject('prizes');
+	getPrizes() {
+		return this._getObject('prizes') || [];
+	},
+
+	// 设置中奖名单
+	setWins(obj) {
+		this._saveObject('winning', obj);
+	},
+
+	// 获取中奖名单
+	getWins() {
+		return this._getObject('winning') || {};
 	},
 
 	_saveObject(key, value) {

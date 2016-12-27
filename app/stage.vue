@@ -3,6 +3,9 @@
 	import * as d4 from 'd3-request';
 	import key from 'keymaster';
 	import DB from './db';
+	import Level from './level';
+	import Const from './const';
+	import WinManager from './win';
 
 	export default {
 		data() {
@@ -13,7 +16,10 @@
 				randomProvider: null, // 随机数提供者
 				name: null, // 获奖者名字
 				departments: null, // 所有参与抽奖的用户名单，Array
-				winner: null, // 所有中奖用户，Array
+				prizes: DB.getPrizes(), //所有奖项
+				prize: null, // 当前抽几等奖
+				winner: WinManager.allName(), // 所有中奖用户，Array
+				winOfCurrPrize: null, //
 				hideNameWall: true, // 隐藏用户墙
 				hideNameWallBtnText: '点击展开用户墙', //
 				lastEndTime: null
@@ -21,33 +27,18 @@
 		},
 
 		beforeMount() {
-			// 初始化奖项
-			DB.setPrizeItem([
-				{
-					name: '特等奖',
-					num: 1
-				},
-				{
-					name: '一等奖',
-					num: 1
-				},
-				{
-					name: '二等奖',
-					num: 2
-				},
-				{
-					name: '三等奖',
-					num: 3
-				},
-				{
-					name: '鼓励奖',
-					num: 10
-				}
-			]);
-			console.log('奖项初始化完成: ', DB.getPrizeItem());
+			if( !this.prizes ) {
+				// 没有初始化奖项
+				alert('未设置奖项');
+				this.prizes = Const.prizes;
+				DB.setPrizes(this.prizes);
+			}
+			// 获取所有
+			console.log('奖项初始化完成: ', this.prizes);
 		},
 
 		mounted(){
+
 			this.LoadDepartMents().then((depart) => {
 				// Returns a number greater than or equal to 0 and less than depart.length.
 				this.randomProvider = d3.randomUniform(0, depart.length);
@@ -67,6 +58,12 @@
 		},
 
 		methods: {
+
+			prizeChanged(prize) {
+				this.prize = prize;
+				this.winOfCurrPrize = WinManager.allNameOfPrize(prize);
+			},
+
 			// 加载参与用户
 			LoadDepartMents() {
 				return new Promise((resolve, reject) => {
@@ -106,6 +103,11 @@
 				}
 			},
 
+			addWinner(name) {
+				this.winner.push(name);
+				WinManager.add(this.prize, name);
+			},
+
 			// 启动／结束抽奖
 			start() {
 				if(!this.ready){
@@ -119,10 +121,13 @@
 					if(this.winner == null) {
 						this.winner = [];
 					}
-					this.winner.push(this.name);
+					this.addWinner(this.name);
 				} else {
 					if(this.winner && this.winner.length === this.departments.length) {
 						return alert('不能抽奖：没有候选人，所有人都已中奖！');
+					}
+					if(WinManager.allNameOfPrize(this.prize).length >= this.prize.num){
+						return alert('抱歉，此奖项中奖人数已达到上限！');
 					}
 					this.started = setInterval(() => {
 						let winner = this.GetOutWinner();
@@ -137,6 +142,10 @@
 				this.hideNameWall = !this.hideNameWall;
 				this.hideNameWallBtnText = this.hideNameWall ? '点击展开用户墙' : '点击收起用户墙';
 			}
+		},
+
+		components: {
+			Level
 		}
 	}
 </script>
@@ -154,9 +163,7 @@
 				<p class="hide-name-wall text-center" @click='toggleNameWall'>{{hideNameWallBtnText}}</p>
 			</div>
 			<p class="scroll-name text-center">{{name}}</p>
-			<div class="award-winner">
-				<span v-for="name in winner">{{name}}</span>
-			</div>
+			<Level @prize-changed="prizeChanged" :win-of-curr-prize="winOfCurrPrize"></Level>
 		</div>
 		<p class="text-center">
 			<span v-if="started">抽奖中（敲空格键锁定抽奖结果）...</span>
@@ -213,13 +220,5 @@
 			padding: 30px
 			font-size: 10rem
 			background: rgba(221,221,221,0.1)
-		.award-winner
-			min-height: 78px
-			> span
-				padding: 10px 15px;
-				margin: 10px 15px 10px 0;
-				background: #df0007
-				color: #fff
-				font-weight: 700
-				display: inline-block
+
 </style>
