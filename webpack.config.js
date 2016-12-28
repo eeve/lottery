@@ -32,6 +32,9 @@ module.exports = {
 		}, {
 			test: /\.vue$/,
 			loader: 'vue'
+		}, {
+			test: /\.(png|jpg)$/,
+			loader: 'url?limit=25000'
 		}]
 	},
 	resolve: {

@@ -1,37 +1,37 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  outline: none;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	outline: none;
 }
 
 *,
 :after,
 :before {
-  box-sizing: border-box
+	box-sizing: border-box
 }
 
 .clearfix:after {
-  content: ".";
-  display: block;
-  height: 0;
-  clear: both;
-  visibility: hidden;
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
 }
 .hide{
 	display: none;
 }
 .text-center {
-  text-align: center;
+	text-align: center;
 }
 .text-right {
-  text-align: right;
+	text-align: right;
 }
 .fr {
-  float: right;
+	float: right;
 }
 .fl {
-  float: left;
+	float: left;
 }
 
 html,body {
@@ -42,7 +42,6 @@ html,body {
 }
 
 #root {
-	margin: 50px 0;
 	position: relative;
 	z-index: 2;
 }
@@ -59,13 +58,144 @@ html,body {
 @font-face {
 	font-family: 'voltergoldfish';
 	/* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-  src: url('./fonts/voltergoldfish.ttf') format('truetype')
+	src: url('./fonts/voltergoldfish.ttf') format('truetype')
 }
 .font-xs{
 	font-family:'voltergoldfish' !important;
 	font-style:normal;
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-stroke-width: 0.2px;
-  -moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	-webkit-text-stroke-width: 0.2px;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.animated {
+	-webkit-animation-duration: 1s;
+	animation-duration: 1s;
+	-webkit-animation-fill-mode: both;
+	animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+}
+
+@-webkit-keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(-100%, 0, 0);
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+.fadeInLeft {
+  -webkit-animation-name: fadeInLeft;
+  animation-name: fadeInLeft;
+}
+
+@-webkit-keyframes zoomIn {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    -webkit-transform: scale3d(.3, .3, .3);
+    transform: scale3d(.3, .3, .3);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.zoomIn {
+  -webkit-animation-name: zoomIn;
+  animation-name: zoomIn;
+}
+
+// 滚动条样式
+::-webkit-scrollbar-track {
+	background:none;
+	border: thin solid lightgray;
+	box-shadow: 0px 0px 1px none inset;
+	border-radius:10px;
+	border:none;
+}
+
+::-webkit-scrollbar-thumb{
+	background-color: rgba(0, 0, 0, 0.198039);
+	height: 50px;
+	-webkit-border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+	background-color: rgba(0, 0, 0, 0.298039);
+	height: 50px;
+	-webkit-border-radius: 8px;
+}
+
+::-webkit-scrollbar{
+	width: 0px;
+}
+
+::-webkit-scrollbar-track-piece{
+	-webkit-border-radius:0;
 }
 

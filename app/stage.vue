@@ -2,6 +2,7 @@
 	import * as d3 from 'd3-random';
 	import * as d4 from 'd3-request';
 	import key from 'keymaster';
+	import Notification from './notification'
 	import DB from './db';
 	import Level from './level';
 	import Const from './const';
@@ -20,16 +21,19 @@
 				prize: null, // 当前抽几等奖
 				winner: WinManager.allName(), // 所有中奖用户，Array
 				winOfCurrPrize: null, //
-				hideNameWall: true, // 隐藏用户墙
-				hideNameWallBtnText: '点击展开用户墙', //
-				lastEndTime: null
+				hideNameWall: false, // 隐藏用户墙
+				hideNameWallBtnText: '切换', //
+				lastEndTime: null,
+				options: null,
+				showNotification: false,
+				scaleVal: 0.0025,
+				loadBarWidth: 0
 			}
 		},
 
 		beforeMount() {
-			if( !this.prizes ) {
+			if( this.prizes.length === 0 ) {
 				// 没有初始化奖项
-				alert('未设置奖项');
 				this.prizes = Const.prizes;
 				DB.setPrizes(this.prizes);
 			}
@@ -43,7 +47,8 @@
 				// Returns a number greater than or equal to 0 and less than depart.length.
 				this.randomProvider = d3.randomUniform(0, depart.length);
 				this.departments = depart;
-				this.ready = true;
+				// this.ready = true;
+				this.enter();
 			});
 			// bind events
 			key('space', () => {
@@ -104,14 +109,26 @@
 			},
 
 			addWinner(name) {
+				this.$root.eventHub.$emit('winner', name);
 				this.winner.push(name);
 				WinManager.add(this.prize, name);
+				this.winOfCurrPrize = WinManager.allNameOfPrize(this.prize);
+			},
+
+			enter() {
+				this.loadBarWidth = '100%';
+				setTimeout(() => {
+				 this.scaleVal = 1;
+				}, 600);
+			  setTimeout(() => {
+		     this.ready = true;
+			  }, 1000);
 			},
 
 			// 启动／结束抽奖
 			start() {
 				if(!this.ready){
-					return alert('正在初始化抽奖用户池，请稍等几秒钟...');
+					return this.showNotice('正在初始化抽奖用户池，请稍等几秒钟...', 'w');
 				}
 				if(this.started){
 					clearInterval(this.started);
@@ -124,10 +141,10 @@
 					this.addWinner(this.name);
 				} else {
 					if(this.winner && this.winner.length === this.departments.length) {
-						return alert('不能抽奖：没有候选人，所有人都已中奖！');
+						return this.showNotice('不能抽奖：没有候选人，所有人都已中奖！', 'e');
 					}
 					if(WinManager.allNameOfPrize(this.prize).length >= this.prize.num){
-						return alert('抱歉，此奖项中奖人数已达到上限！');
+						return this.showNotice('抱歉，此奖项中奖人数已达到上限！', 'e');
 					}
 					this.started = setInterval(() => {
 						let winner = this.GetOutWinner();
@@ -141,47 +158,66 @@
 			toggleNameWall() {
 				this.hideNameWall = !this.hideNameWall;
 				this.hideNameWallBtnText = this.hideNameWall ? '点击展开用户墙' : '点击收起用户墙';
+			},
+
+			showNotice(text, type, time) {
+				this.showNotification = true;
+				this.options = {
+					autoClose: true,
+					showTime: time || 1000,
+					content: text,
+					backgroundColor: type==='w' ? '#fbff7c' : type==='e' ? '#fc5050' : type==='i' ? '#769FCD' : null,
+					textColor: type==='w' ? '#92253f' : null,
+				};
+			},
+
+			onCloseNotification() {
+				this.showNotification = false;
+				this.options = null;
 			}
 		},
 
 		components: {
-			Level
+			Level,
+			Notification
 		}
 	}
 </script>
 
 <template>
-	<div class="stage">
-		<div class="tip text-right" v-if="ready">
+	<div class="stage animated zoomIn" v-if="ready">
+		<div class="tip text-left">
 			排名不分先后，不影响抽奖结果，共<span class="count">{{departments.length}}</span>人参与抽奖
 		</div>
 		<div class="screen">
 			<div class="name-box">
-				<ul class="name-wall clearfix" :class='{ "hide-wall": hideNameWall }'>
+				<ul class="name-wall clearfix" v-show="!hideNameWall" :class='{ "hide-wall": hideNameWall }'>
 					<li class="center" v-for='name, i in departments' :class="{ active: i == activeIndex, out: winner && winner.indexOf(name) != -1 }">{{name}}</li>
 				</ul>
-				<p class="hide-name-wall text-center" @click='toggleNameWall'>{{hideNameWallBtnText}}</p>
+				<p class="scroll-name text-center" v-show="hideNameWall">{{name}}</p>
 			</div>
-			<p class="scroll-name text-center">{{name}}</p>
-			<Level @prize-changed="prizeChanged" :win-of-curr-prize="winOfCurrPrize"></Level>
+			<p class="hide-name-wall text-center" @click='toggleNameWall'>{{hideNameWallBtnText}}</p>
+			<level @prize-changed="prizeChanged" :win-of-curr-prize="winOfCurrPrize"></level>
 		</div>
 		<p class="text-center">
 			<span v-if="started">抽奖中（敲空格键锁定抽奖结果）...</span>
 			<span v-if="!started">敲空格键开始抽奖</span>
 		</p>
+		<notification :options="options" :show="showNotification" @closed="onCloseNotification"></notification>
 	</div>
 </template>
 
 <style lang='stylus' scoped>
 	.stage
 		position: relative
-		z-index: 2
+		z-index: 200
 		.count
 			font-weight: 700
 			color: #FCE38A
 			padding: 0 10px
 		.name-box
-			padding: 20px 0
+			margin-top: 20px
+			box-shadow: 5px 5px 0px rgba(0,0,0,0.08)
 			ul,li
 				list-style none
 			li
@@ -203,19 +239,20 @@
 					height: 0
 					opacity: 0.1
 					overflow: hidden
-
-			.hide-name-wall
-				transition: all 1s
-				width: 150px
-				margin: 0 auto
-				border-radius: 4px
-				border-top-left-radius: 0
-				border-top-right-radius: 0
-				color: rgba(221,221,221,0.5)
-				&:hover
-					background: rgba(221,221,221,0.1)
-					cursor: pointer;
+		.hide-name-wall
+			margin-top: 20px
+			transition: all 1s
+			width: 150px
+			margin: 0 auto
+			border-radius: 4px
+			border-top-left-radius: 0
+			border-top-right-radius: 0
+			color: rgba(221,221,221,0.5)
+			&:hover
+				background: rgba(221,221,221,0.1)
+				cursor: pointer;
 		.scroll-name
+			box-shadow: inset 0px 0px 50px 10px rgba(255,255,255,0.2)
 			min-height: 300px
 			padding: 30px
 			font-size: 10rem

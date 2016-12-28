@@ -1,5 +1,4 @@
 import Stage from './stage';
-import Lottery from './lottery';
 
 export default [
 	{
@@ -9,12 +8,6 @@ export default [
 	{
 		name: 'stage',
 		path: '/stage',
-		component: Stage,
-		children: [
-			{
-				path: 'lottery',
-				component: Lottery
-			}
-		]
+		component: Stage
 	}
 ]

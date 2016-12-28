@@ -4,8 +4,8 @@ export default {
 	},
 
 	load() {
-		this.WINDOW_WIDTH = document.body.offsetWidth;
-		this.WINDOW_HEIGHT = document.body.offsetHeight * 3;
+		this.WINDOW_WIDTH = window.screen.width; //document.body.offsetWidth;
+		this.WINDOW_HEIGHT = window.screen.height; //document.body.offsetHeight * 3;
 		this.num = 500;
 		this.stars = [];
 		this.mouseX = this.WINDOW_WIDTH / 2;

@@ -18,14 +18,13 @@ const router = new VueRouter({
 	}
 });
 
-import Star from './star';
-setTimeout(function(){
-	Star.load();
-}, 0.1);
 import App from './app';
 
 new Vue({
  el: '#root',
  components: { App },
- router
+ router,
+ data: {
+ 	eventHub: new Vue()
+ }
 });
